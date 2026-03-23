@@ -122,17 +122,7 @@ variable "elasticsearch_alerts" {
       pending_for    = optional(string, "5m")
       no_data_state  = optional(string, "Alerting")
       exec_err_state = optional(string, "Alerting")
-      aggregation = object({
-        field         = string
-        id            = string
-        min_doc_count = string
-        order         = string
-        orderBy       = string
-        size          = string
-        missing       = string
-        type          = string
-        interval      = optional(string, "auto")
-      })
+      aggregations = any
       metric = object({
         field               = optional(string, null)
         id                  = string
@@ -148,6 +138,19 @@ variable "elasticsearch_alerts" {
       for alert in var.elasticsearch_alerts : contains([">", "<", "==", "!=", ">=", "<="], alert.operator)
     ])
     error_message = "operator must be one of: >, <, ==, !=, >=, <="
+  }
+
+  validation {
+    condition = alltrue([
+      for alert in var.elasticsearch_alerts :
+      can(alert.aggregations.field) || (
+        can(tolist(alert.aggregations)) &&
+        alltrue([
+          for aggregation in tolist(alert.aggregations) : can(aggregation.field)
+        ])
+      )
+    ])
+    error_message = "aggregations must be either a single aggregation object or a list of aggregation objects."
   }
 }
 
