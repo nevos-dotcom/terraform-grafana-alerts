@@ -283,7 +283,7 @@ resource "grafana_rule_group" "alerts" {
         datasource_uid = local.datasource_uid
         model = jsonencode({
           bucketAggs = [
-            for aggregation in (can(rule.value.aggregations.field) ? [rule.value.aggregations] : rule.value.aggregations) : {
+            for aggregation in (rule.value.aggregations) : {
               field = aggregation.field
               id    = aggregation.id
               settings = {
@@ -312,7 +312,7 @@ resource "grafana_rule_group" "alerts" {
             uid  = local.datasource_uid
           }
           queryType = "lucene"
-          timeField = (can(rule.value.aggregations.field) ? rule.value.aggregations.field : rule.value.aggregations[0].field)
+          timeField = (rule.value.aggregations[0].field)
           index     = rule.value.index
           query     = rule.value.query
           refId     = "A"

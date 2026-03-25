@@ -112,7 +112,7 @@ alerts = [
     name        = "Elasticsearch High Error Rate"
     index       = "elasticsearch-logs"
     query       = "level:ERROR"
-    aggregations = {
+    aggregations = [{
       field          = "@timestamp"
       id             = "2"
       min_doc_count  = "0"
@@ -122,7 +122,7 @@ alerts = [
       missing        = ""
       type           = "date_histogram"
       interval       = "1m"
-    }
+    }]
     metric = {
       field               = "_count"
       id                  = "1"
