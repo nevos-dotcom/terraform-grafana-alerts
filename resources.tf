@@ -286,14 +286,14 @@ resource "grafana_rule_group" "alerts" {
             for aggregation in (rule.value.aggregations) : {
               field = aggregation.field
               id    = aggregation.id
-              settings = {
-                min_doc_count = tonumber(aggregation.min_doc_count)
-                interval      = aggregation.interval
-                order         = aggregation.order
-                orderBy       = aggregation.orderBy
-                size          = aggregation.size
-                missing       = aggregation.missing
-              }
+              settings = merge(
+                can(aggregation.min_doc_count) ? { min_doc_count = tonumber(aggregation.min_doc_count) } : {},
+                can(aggregation.interval) ? { interval = aggregation.interval } : {},
+                can(aggregation.order) ? { order = aggregation.order } : {},
+                can(aggregation.orderBy) ? { orderBy = aggregation.orderBy } : {},
+                can(aggregation.size) ? { size = tonumber(aggregation.size) } : {},
+                can(aggregation.missing) ? { missing = aggregation.missing } : {}
+              )
               type = aggregation.type
             }
           ]
